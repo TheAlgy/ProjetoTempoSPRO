@@ -105,52 +105,13 @@ namespace ProjetoTempoSPRO.Controllers
             return _context.Cities.Any(e => e.Id == id);
         }
 
-
         [HttpGet]
         [Route("Save")]
 
         public List<ConsultaCidades> GetProdutosAsync()
         {
 
-            /* string json = new WebClient().DownloadString("https://servicodados.ibge.gov.br/api/v1/localidades/municipios");
-             Console.WriteLine(json);
-
-
-             List <ConsultaCidades> cidades = JsonConvert.DeserializeObject<List<ConsultaCidades>>(json);
-
-             foreach (ConsultaCidades cidade in cidades)
-             {
-                 ConsultaCidades city = new ConsultaCidades();
-                 city.nome = cidade.nome;
-                 _context.PreviousCity.Add(city);
-                 _context.SaveChanges();
-             }
-             // _context.Cities.AddRange(cidades);
-            */
              return _context.PreviousCity.ToList();
-
-
-                 /*
-                 // City[] city = new City[]();
-                 List<ConsultaCidades> cidades = new List<ConsultaCidades>();
-                 cidades = JsonConvert.DeserializeObject<List<ConsultaCidades>>;
-                 foreach(ConsultaCidades cidade in cidades)
-                 {
-                     ConsultaCidades city = new ConsultaCidades();
-                     city.nome = cidade.nome;
-                     _context.PreviousCity.Add(city);
-                     _context.SaveChanges();
-                 }
-                // _context.Cities.AddRange(cidades);
-                 return _context.PreviousCity.ToList();
-             }
-             catch (Exception ex)
-             {
-                 throw ex;
-             }
-                 */
         }
     }  
-
-}
-        
+} 
