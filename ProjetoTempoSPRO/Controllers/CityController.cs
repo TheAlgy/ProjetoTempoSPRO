@@ -36,8 +36,7 @@ namespace ProjetoTempoSPRO.Controllers
         [Route("GetCityById/{id}")]
         public IActionResult GetCityById([FromRoute] int id)
         {
-            var cidade = _context.Cities.Find(id);
-
+            City cidade = _context.Cities.Find(id);
 
             if (cidade == null)
             {
@@ -60,10 +59,17 @@ namespace ProjetoTempoSPRO.Controllers
 
         public IActionResult PostCities([FromBody] City city)
         {
-            _context.Cities.Add(city);
+            ConsultaCidades consultacidade = _context.PreviousCity.FirstOrDefault(x => x.nome == city.nome);
+            if(consultacidade == null)
+            {
+                return NotFound("Nome de cidade incorreto. Por favor, preste atenção quanto a acentuação.");
+            }
+            City newCity = new City();
+            newCity.nome = consultacidade.nome;
+            _context.Cities.Add(newCity);
             _context.SaveChangesAsync();
 
-            return Created("", city);
+            return Created("", _context.Cities.FirstOrDefault(x => x.nome == newCity.nome));
         }
 
 
