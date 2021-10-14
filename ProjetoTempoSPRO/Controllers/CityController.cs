@@ -30,6 +30,24 @@ namespace ProjetoTempoSPRO.Controllers
             _context = context;
         }
 
+
+        // GET: api/City/GetCityById
+        [HttpGet]
+        [Route("GetCityById/{id}")]
+        public IActionResult GetCityById([FromRoute] int id)
+        {
+            var cidade = _context.Cities.Find(id);
+
+
+            if (cidade == null)
+            {
+                return NotFound("Cidade não encontrada!");
+            }
+
+            return Ok(cidade);
+        }
+
+
         // GET: api/City/ListCities
         [HttpGet]
         [Route("ListCities")]
