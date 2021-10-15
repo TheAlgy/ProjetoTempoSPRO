@@ -29,23 +29,7 @@ namespace ProjetoTempoSPRO.Controllers
         {
             _context = context;
         }
-
-
-        // GET: api/City/GetCityById
-        [HttpGet]
-        [Route("GetCityById/{id}")]
-        public IActionResult GetCityById([FromRoute] int id)
-        {
-            City cidade = _context.Cities.Find(id);
-
-            if (cidade == null)
-            {
-                return NotFound("Cidade não encontrada!");
-            }
-
-            return Ok(cidade);
-        }
-
+        
 
         // GET: api/City/ListCities
         [HttpGet]
@@ -59,19 +43,25 @@ namespace ProjetoTempoSPRO.Controllers
 
         public IActionResult PostCities([FromBody] City city)
         {
+            var verificaCity = _context.Cities.FirstOrDefault(x => x.nome == city.nome);
             ConsultaCidades consultacidade = _context.PreviousCity.FirstOrDefault(x => x.nome == city.nome);
-            if(consultacidade == null)
+            if (consultacidade == null)
             {
-                return NotFound("Nome de cidade incorreto. Por favor, preste atenção quanto a acentuação.");
+                return NotFound("Nome de cidade incorreto. Por favor, preste atenção quanto a ortografia, os nomes de cidade devem começar com letra maiuscula.");
             }
-            City newCity = new City();
-            newCity.nome = consultacidade.nome;
-            _context.Cities.Add(newCity);
-            _context.SaveChangesAsync();
+            if (verificaCity == null)
+            {
+                City newCity = new City();
+                newCity.nome = consultacidade.nome;
+                _context.Cities.Add(newCity);
+                _context.SaveChangesAsync();
+                return Created("", newCity);
+            }
+            
+            return NotFound("Oooooops, você já cadastrou essa cidade. Quem sabe você pode cadastrar uma nova!" );
 
-            return Created("", _context.Cities.FirstOrDefault(x => x.nome == newCity.nome));
         }
-
+            
 
         // DELETE: api/DeleteCitiesById
         [HttpDelete]
@@ -137,5 +127,45 @@ namespace ProjetoTempoSPRO.Controllers
 
              return _context.PreviousCity.ToList();
         }
-    }  
-} 
+
+        // GET: api/City/City/{city}
+        [HttpGet]
+        [Route("City/{id}")]
+        public async Task<IActionResult> City(int id)
+        {
+                try
+                {
+                    City city = _context.Cities.Find(id);
+                    if(city == null){
+
+                    return NotFound("Cidade não encontrada");
+                }
+
+                    client.BaseAddress = new Uri("http://api.openweathermap.org");
+                    var response = await client.GetAsync($"/data/2.5/weather?q={city.nome}&appid=bd6f5a541db04c91d1d95653e1d6c592&units=metric");
+                    response.EnsureSuccessStatusCode();
+
+                    var stringResult = await response.Content.ReadAsStringAsync();
+                    var rawWeather = JsonConvert.DeserializeObject<OpenWeatherResponse>(stringResult);
+                return Ok(new
+                {
+                    Cidade = city.nome,
+                    TemperaturaMínima = rawWeather.Main.Temp_Min,
+                    TemperaturaMáxima = rawWeather.Main.Temp_Max,
+                    TemperaturaAtual = rawWeather.Main.Temp,
+                    Humidade = rawWeather.Main.Humidity,
+                    SensaçãoTérmica = rawWeather.Main.Feels_Like,
+                    Sumário = string.Join(",", rawWeather.Weather.Select(x => x.Main)),
+                    Descrição = string.Join(",", rawWeather.Weather.Select(x => x.Description))
+
+                }) ;
+                }
+                catch (HttpRequestException httpRequestException)
+                {
+                    return BadRequest($"Error getting weather from OpenWeather: {httpRequestException.Message}");
+                }
+            }
+        }
+
+    }
+
