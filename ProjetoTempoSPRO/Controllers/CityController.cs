@@ -155,7 +155,6 @@ namespace ProjetoTempoSPRO.Controllers
                     TemperaturaAtual = rawWeather.Main.Temp,
                     Humidade = rawWeather.Main.Humidity,
                     SensaçãoTérmica = rawWeather.Main.Feels_Like,
-                    Sumário = string.Join(",", rawWeather.Weather.Select(x => x.Main)),
                     Descrição = string.Join(",", rawWeather.Weather.Select(x => x.Description))
 
                 }) ;
