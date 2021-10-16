@@ -6,12 +6,10 @@ using System.Threading.Tasks;
 
 namespace ProjetoTempoSPRO.Models
 {
-    public class ConsultaCidades
+    public class CityReference
     {
      
         public int Id { get; set; }
-
-        [JsonProperty("nome")]
         public string nome { get; set; }
     }
 }

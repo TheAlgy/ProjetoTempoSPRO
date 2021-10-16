@@ -44,7 +44,7 @@ namespace ProjetoTempoSPRO.Controllers
         public IActionResult PostCities([FromBody] City city)
         {
             var verificaCity = _context.Cities.FirstOrDefault(x => x.nome == city.nome);
-            ConsultaCidades consultacidade = _context.PreviousCity.FirstOrDefault(x => x.nome == city.nome);
+            CityReference consultacidade = _context.PreviousCity.FirstOrDefault(x => x.nome == city.nome);
             if (consultacidade == null)
             {
                 return NotFound("Nome de cidade incorreto. Por favor, preste atenção quanto a ortografia, os nomes de cidade devem começar com letra maiuscula.");
@@ -65,24 +65,24 @@ namespace ProjetoTempoSPRO.Controllers
 
         // DELETE: api/DeleteCitiesById
         [HttpDelete]
-        [Route("DeleteCitiesById/{id}")]
+        [Route("DeleteCityById/{id}")]
 
-        public IActionResult DeleteCitiesById([FromRoute] int id)
+        public IActionResult DeleteCityById([FromRoute] int id)
         {
-            var city = _context.Cities.Find(id);
+            City city = _context.Cities.Find(id);
             if (city == null)
             {
                 return NotFound("Cidade não encontrada!");
             }
 
             _context.Cities.Remove(city);
+            _context.SaveChanges();
 
             return Ok(_context.Cities.ToList());
         }
 
 
         // PUT: api/PutCityById
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut]
         [Route("PutCityById/{id}")]
         public IActionResult PutCityById([FromRoute] int id, [FromBody] City city)
@@ -92,12 +92,23 @@ namespace ProjetoTempoSPRO.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(city).State = EntityState.Modified;
+            //verifica se a cidade inserida tem um nome válido
+            var verificaCity = _context.PreviousCity.FirstOrDefault(x => x.nome == city.nome);
 
+            //verifica se a cidade inserida existe no banco
+            var cityRegister = _context.Cities.FirstOrDefault(x => x.nome == city.nome);
 
             try
-            {
-                _context.SaveChanges();
+            {              
+                if(verificaCity != null && cityRegister == null)
+                {
+                    _context.Entry(city).State = EntityState.Modified;
+                    _context.SaveChanges();
+                }
+                else
+                {
+                    return BadRequest("Nome de cidade já cadastrado e/ou nome de cidade incorreto.");
+                }
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -119,18 +130,10 @@ namespace ProjetoTempoSPRO.Controllers
             return _context.Cities.Any(e => e.Id == id);
         }
 
-        [HttpGet]
-        [Route("Save")]
-
-        public List<ConsultaCidades> GetProdutosAsync()
-        {
-
-             return _context.PreviousCity.ToList();
-        }
-
+       
         // GET: api/City/City/{city}
         [HttpGet]
-        [Route("City/{id}")]
+        [Route("GetCityById/{id}")]
         public async Task<IActionResult> City(int id)
         {
                 try

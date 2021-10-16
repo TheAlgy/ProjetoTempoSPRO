@@ -20,7 +20,7 @@ namespace ProjetoTempoSPRO.Data
 
 
         public DbSet<City> Cities { get; set; }
-        public DbSet<ConsultaCidades> PreviousCity { get; set; }
+        public DbSet<CityReference> PreviousCity { get; set; }
 
 
         private void SeedData()
@@ -29,11 +29,11 @@ namespace ProjetoTempoSPRO.Data
 
                 string json = new WebClient().DownloadString("https://servicodados.ibge.gov.br/api/v1/localidades/municipios");
 
-                List<ConsultaCidades> cidades = JsonConvert.DeserializeObject<List<ConsultaCidades>>(json);
+                List<CityReference> cidades = JsonConvert.DeserializeObject<List<CityReference>>(json);
 
-                foreach (ConsultaCidades cidade in cidades)
+                foreach (CityReference cidade in cidades)
                 {
-                    ConsultaCidades city = new ConsultaCidades();
+                    CityReference city = new CityReference();
                     city.nome = cidade.nome;
                     PreviousCity.Add(city);
                     SaveChanges();
