@@ -26,10 +26,17 @@ Deletar cidade
 Listar cidade
 * Verifica na base de cidades cadastradas se o ID preenchido existe;
 * Caso o ID exista, apresenta o nome da cidade e realiza uma consulta de informações do tempo utilizando como base a API OpenWeather, os dados retornados na busca são:
-- Nome da cidade
-- Temperatura Mínima
-- Temperatura Máxima
-- Temperatura Atual
-- Humidade
-- Sensação Térmica
-- Descrição.
+
+→ Nome da cidade;
+
+→ Temperatura Mínima; 
+
+→ Temperatura Máxima; 
+
+→ Temperatura Atual; 
+
+→ Humidade; 
+
+→ Sensação Térmica; 
+
+→ Descrição.
